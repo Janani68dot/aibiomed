@@ -1,0 +1,52 @@
+{
+  "reports": [
+    {
+      "timestamp": "2026-03-06 11:21",
+      "patient_name": "saba yasmeen",
+      "age": 19,
+      "gender": "Female",
+      "username": "saba_kamdod",
+      "final_score": 0.5,
+      "speech_risk": 0.5,
+      "text_risk": 0.5,
+      "memory_score": 0.5,
+      "pronunciation_score": 0.5,
+      "findings": [
+        "No speech analysis data available"
+      ],
+      "pdf_path": "/Users/sarakamdod/Desktop/cognitive-ai/reports/saba_yasmeen_20260306_112146.pdf"
+    },
+    {
+      "timestamp": "2026-03-06 11:21",
+      "patient_name": "saba yasmeen",
+      "age": 19,
+      "gender": "Female",
+      "username": "saba_kamdod",
+      "final_score": 0.5,
+      "speech_risk": 0.5,
+      "text_risk": 0.5,
+      "memory_score": 0.5,
+      "pronunciation_score": 0.5,
+      "findings": [
+        "No speech analysis data available"
+      ],
+      "pdf_path": "/Users/sarakamdod/Desktop/cognitive-ai/reports/saba_yasmeen_20260306_112157.pdf"
+    },
+    {
+      "timestamp": "2026-03-06 12:14",
+      "patient_name": "saba yasmeen",
+      "age": 19,
+      "gender": "Female",
+      "username": "saba_kamdod",
+      "final_score": 0.5,
+      "speech_risk": 0.5,
+      "text_risk": 0.5,
+      "memory_score": 0.5,
+      "pronunciation_score": 0.5,
+      "findings": [
+        "No speech analysis data available"
+      ],
+      "pdf_path": "/Users/sarakamdod/Desktop/cognitive-ai/reports/saba_yasmeen_20260306_121413.pdf"
+    }
+  ]
+}
