@@ -1,0 +1,22 @@
+[
+  {
+    "timestamp": "2026-03-07T00:26:02.852957",
+    "final_score": 0.5253075478656232,
+    "speech_risk": 0.5562389952569404,
+    "text_risk": 0.5,
+    "memory_score": 0.5,
+    "pronunciation_score": 0.5,
+    "findings": [
+      "Logopenia (Grammatical Collapse)"
+    ],
+    "patient": {
+      "username": "yasmeen",
+      "password_hash": "f760262178831e5a5a378c3552047badb25ecbda042dfc12747f0fa9c6a366f7",
+      "role": "patient",
+      "name": "yasmeen",
+      "age": 65,
+      "gender": "Male",
+      "created_at": "2026-03-07T00:25:06.890147"
+    }
+  }
+]

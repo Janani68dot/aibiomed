@@ -83,6 +83,58 @@
         "Semantic Impoverishment (High Pronoun Density)"
       ],
       "pdf_path": "C:\\Users\\janan\\Downloads\\cognitive-ai-main\\cognitive-ai-main\\reports\\John__20260306_220756.pdf"
+    },
+    {
+      "timestamp": "2026-03-07T00:21:52.966895",
+      "patient_name": "John ",
+      "age": 30,
+      "gender": "Male",
+      "username": "John",
+      "final_score": 0.5952,
+      "speech_risk": 0.7116,
+      "text_risk": 0.5,
+      "memory_score": 0.5,
+      "pronunciation_score": 0.5,
+      "findings": [
+        "Anomia (Significant Lexical Search Deficit)",
+        "Palilalia (Repetition Loop)",
+        "Logopenia (Grammatical Collapse)",
+        "Semantic Impoverishment (High Pronoun Density)"
+      ],
+      "pdf_path": "C:\\Users\\janan\\Downloads\\cognitive-ai-main\\cognitive-ai-main\\reports\\John__20260307_002152.pdf"
+    },
+    {
+      "timestamp": "2026-03-07T00:26:02.852957",
+      "patient_name": "yasmeen",
+      "age": 65,
+      "gender": "Male",
+      "username": "yasmeen",
+      "final_score": 0.5253,
+      "speech_risk": 0.5562,
+      "text_risk": 0.5,
+      "memory_score": 0.5,
+      "pronunciation_score": 0.5,
+      "findings": [
+        "Logopenia (Grammatical Collapse)"
+      ],
+      "pdf_path": "C:\\Users\\janan\\Downloads\\cognitive-ai-main\\cognitive-ai-main\\reports\\yasmeen_20260307_002602.pdf"
+    },
+    {
+      "timestamp": "2026-03-07T00:37:51.247509",
+      "patient_name": "John ",
+      "age": 30,
+      "gender": "Male",
+      "username": "John",
+      "final_score": 0.532,
+      "speech_risk": 0.5712,
+      "text_risk": 0.5,
+      "memory_score": 0.5,
+      "pronunciation_score": 0.5,
+      "findings": [
+        "Logopenia (Grammatical Collapse)",
+        "Semantic Impoverishment (High Pronoun Density)"
+      ],
+      "pdf_path": "C:\\Users\\janan\\Downloads\\cognitive-ai-main\\cognitive-ai-main\\reports\\John__20260307_003751.pdf"
     }
   ]
 }

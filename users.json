@@ -44,6 +44,15 @@
       "age": 65,
       "gender": "Male",
       "created_at": "2026-03-06T22:42:42.813966"
+    },
+    {
+      "username": "yasmeen",
+      "password_hash": "f760262178831e5a5a378c3552047badb25ecbda042dfc12747f0fa9c6a366f7",
+      "role": "patient",
+      "name": "yasmeen",
+      "age": 65,
+      "gender": "Male",
+      "created_at": "2026-03-07T00:25:06.890147"
     }
   ]
 }
