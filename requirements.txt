@@ -5,6 +5,8 @@ scikit-learn
 matplotlib
 librosa
 soundfile
-joblib
-SpeechRecognition
+spacy
+speech_recognition
 fpdf2
+joblib
+plotly

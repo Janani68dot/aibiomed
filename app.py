@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-
+import spacy
 import re
 import random
 import os
@@ -14,6 +14,9 @@ from fpdf import FPDF, XPos, YPos
 import io
 import joblib
 from features import extract_features
+import pandas as pd
+import plotly.graph_objects as go
+import plotly.express as px
 
 # Custom Auth Module
 from auth import load_users, save_users, authenticate, register_patient, get_all_patients
@@ -22,9 +25,6 @@ from journal_db import (
     save_journal_entry, get_journal_entries,
     already_recorded_today, export_journal_csv, get_all_journal_users
 )
-import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
 
 # PRO UI CONFIG
 st.set_page_config(
@@ -160,13 +160,14 @@ h1, h2, h3 {
 
 h1 { font-weight: 800 !important; font-size: 4rem !important; line-height: 1.1 !important; }
 
-/* Cinematic Branding */
+/* Cinematic Branding - HYPER VISIBLE */
 .gradient-text {
-    background: linear-gradient(135deg, #ffffff 0%, #93c5fd 50%, #c084fc 100%) !important;
+    background: linear-gradient(135deg, #ffffff 0%, #a5ccff 50%, #d8b4fe 100%) !important;
     -webkit-background-clip: text !important;
     -webkit-text-fill-color: transparent !important;
     font-weight: 900 !important;
-    text-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
+    color: white !important; /* Fallback */
+    text-shadow: 0 0 20px rgba(96, 165, 250, 0.5) !important;
 }
 
 /* Hyper-Sensitive Risk States */
@@ -667,7 +668,8 @@ if st.session_state.role == "doctor":
         sel_juser = st.selectbox(
             "Select patient for journal review:",
             options=journal_users,
-            format_func=lambda x: f"📓 {pt_name_map.get(x, x)}"
+            format_func=lambda x: f"📓 {pt_name_map.get(x, x)}",
+            key="doc_journal_select"
         )
         j7_doc  = get_journal_entries(sel_juser, days=7)
         j30_doc = get_journal_entries(sel_juser, days=30)
@@ -1032,6 +1034,92 @@ def record_speech():
         st.error(f"🎤 Microphone error: {e}")
         return None, None
 
+# ── JOURNAL HELPERS ──────────────────────────────────────────────────────────
+def _journal_charts(entries_7, entries_30, prefix="pat"):
+    if not entries_7 and not entries_30:
+        st.info("No journal history yet. Record your first entry above!")
+        return
+
+    trend_tab7, trend_tab30 = st.tabs(["📅 Last 7 Days", "🗓️ Last 30 Days"])
+
+    for t_tab, entries, label in [
+        (trend_tab7,  entries_7,  "7-Day"),
+        (trend_tab30, entries_30, "30-Day"),
+    ]:
+        with t_tab:
+            if not entries:
+                st.info(f"No entries in the last {label}.")
+                continue
+
+            df_j = pd.DataFrame(entries)
+            df_j["dt"]    = pd.to_datetime(df_j["timestamp"])
+            df_j          = df_j.sort_values("dt")
+            df_j["lbl"]   = df_j["dt"].dt.strftime("%b %d")
+
+            _plot_bg = dict(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
+                            font=dict(color="white", family="Outfit"),
+                            xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
+                            yaxis=dict(gridcolor="rgba(255,255,255,0.06)", tickformat=".0%"),
+                            margin=dict(l=10, r=10, t=30, b=10), height=260)
+
+            # Chart 1 – Cognitive Score Trend
+            st.markdown("#### 📈 Cognitive Score Trend")
+            fig_cog = go.Figure(go.Scatter(
+                x=df_j["lbl"], y=df_j["cognitive_score"],
+                mode="lines+markers", name="Cognitive Score",
+                line=dict(color="#60a5fa", width=3),
+                marker=dict(size=8, color="#60a5fa"),
+                fill="tozeroy", fillcolor="rgba(96,165,250,0.1)",
+            ))
+            fig_cog.update_layout(**_plot_bg)
+            st.plotly_chart(fig_cog, use_container_width=True, key=f"cog_{prefix}_{label}")
+
+            ch_left, ch_right = st.columns(2)
+
+            # Chart 2 – Vocabulary Richness
+            with ch_left:
+                st.markdown("#### 📚 Vocabulary Richness")
+                fig_voc = go.Figure(go.Bar(
+                    x=df_j["lbl"], y=df_j["vocabulary_score"],
+                    marker_color=[
+                        "#22c55e" if v > 0.6 else ("#f59e0b" if v > 0.4 else "#ef4444")
+                        for v in df_j["vocabulary_score"]
+                    ],
+                    text=[f"{v:.0%}" for v in df_j["vocabulary_score"]],
+                    textposition="outside", textfont=dict(color="white"),
+                ))
+                fig_voc.update_layout(**_plot_bg)
+                st.plotly_chart(fig_voc, use_container_width=True, key=f"voc_{prefix}_{label}")
+
+            # Chart 3 – Hesitation Frequency
+            with ch_right:
+                st.markdown("#### ⏸️ Hesitation Frequency")
+                fig_hes = go.Figure(go.Scatter(
+                    x=df_j["lbl"], y=df_j["hesitation_score"],
+                    mode="lines+markers", name="Hesitation",
+                    line=dict(color="#f59e0b", width=2, dash="dot"),
+                    marker=dict(size=7, color="#f59e0b"),
+                ))
+                fig_hes.update_layout(**_plot_bg)
+                st.plotly_chart(fig_hes, use_container_width=True, key=f"hes_{prefix}_{label}")
+
+            # Chart 4 – Speech Fluency
+            st.markdown("#### 🌊 Speech Fluency Trend")
+            fig_flu = go.Figure(go.Scatter(
+                x=df_j["lbl"], y=df_j["fluency_score"],
+                mode="lines+markers", name="Fluency",
+                line=dict(color="#a855f7", width=3),
+                marker=dict(size=8, color="#a855f7"),
+                fill="tozeroy", fillcolor="rgba(168,85,247,0.08)",
+            ))
+            fig_flu.update_layout(**_plot_bg)
+            st.plotly_chart(fig_flu, use_container_width=True, key=f"flu_{prefix}_{label}")
+
+            # Past entries preview
+            with st.expander("📋 Past Entries"):
+                disp = df_j[["lbl", "cognitive_score", "hesitation_score", "fluency_score", "vocabulary_score", "transcript"]].copy()
+                disp.columns = ["Date", "Cognitive", "Hesitation", "Fluency", "Vocabulary", "Transcript"]
+                st.dataframe(disp, use_container_width=True)
 
 # PRO TABS
 tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
@@ -1468,92 +1556,6 @@ with tab6:
     st.markdown("</div>", unsafe_allow_html=True)
 
     # ── TRENDS SECTION ───────────────────────────────────────────────────────
-    def _journal_charts(entries_7, entries_30, prefix="pat"):
-        if not entries_7 and not entries_30:
-            st.info("No journal history yet. Record your first entry above!")
-            return
-
-        trend_tab7, trend_tab30 = st.tabs(["📅 Last 7 Days", "🗓️ Last 30 Days"])
-
-        for t_tab, entries, label in [
-            (trend_tab7,  entries_7,  "7-Day"),
-            (trend_tab30, entries_30, "30-Day"),
-        ]:
-            with t_tab:
-                if not entries:
-                    st.info(f"No entries in the last {label}.")
-                    continue
-
-                df_j = pd.DataFrame(entries)
-                df_j["dt"]    = pd.to_datetime(df_j["timestamp"])
-                df_j          = df_j.sort_values("dt")
-                df_j["lbl"]   = df_j["dt"].dt.strftime("%b %d")
-
-                _plot_bg = dict(plot_bgcolor="rgba(0,0,0,0)", paper_bgcolor="rgba(0,0,0,0)",
-                                font=dict(color="white", family="Outfit"),
-                                xaxis=dict(gridcolor="rgba(255,255,255,0.06)"),
-                                yaxis=dict(gridcolor="rgba(255,255,255,0.06)", tickformat=".0%"),
-                                margin=dict(l=10, r=10, t=30, b=10), height=260)
-
-                # Chart 1 – Cognitive Score Trend
-                st.markdown("#### 📈 Cognitive Score Trend")
-                fig_cog = go.Figure(go.Scatter(
-                    x=df_j["lbl"], y=df_j["cognitive_score"],
-                    mode="lines+markers", name="Cognitive Score",
-                    line=dict(color="#60a5fa", width=3),
-                    marker=dict(size=8, color="#60a5fa"),
-                    fill="tozeroy", fillcolor="rgba(96,165,250,0.1)",
-                ))
-                fig_cog.update_layout(**_plot_bg)
-                st.plotly_chart(fig_cog, use_container_width=True, key=f"cog_{prefix}_{label}")
-
-                ch_left, ch_right = st.columns(2)
-
-                # Chart 2 – Vocabulary Richness
-                with ch_left:
-                    st.markdown("#### 📚 Vocabulary Richness")
-                    fig_voc = go.Figure(go.Bar(
-                        x=df_j["lbl"], y=df_j["vocabulary_score"],
-                        marker_color=[
-                            "#22c55e" if v > 0.6 else ("#f59e0b" if v > 0.4 else "#ef4444")
-                            for v in df_j["vocabulary_score"]
-                        ],
-                        text=[f"{v:.0%}" for v in df_j["vocabulary_score"]],
-                        textposition="outside", textfont=dict(color="white"),
-                    ))
-                    fig_voc.update_layout(**_plot_bg)
-                    st.plotly_chart(fig_voc, use_container_width=True, key=f"voc_{prefix}_{label}")
-
-                # Chart 3 – Hesitation Frequency
-                with ch_right:
-                    st.markdown("#### ⏸️ Hesitation Frequency")
-                    fig_hes = go.Figure(go.Scatter(
-                        x=df_j["lbl"], y=df_j["hesitation_score"],
-                        mode="lines+markers", name="Hesitation",
-                        line=dict(color="#f59e0b", width=2, dash="dot"),
-                        marker=dict(size=7, color="#f59e0b"),
-                    ))
-                    fig_hes.update_layout(**_plot_bg)
-                    st.plotly_chart(fig_hes, use_container_width=True, key=f"hes_{prefix}_{label}")
-
-                # Chart 4 – Speech Fluency
-                st.markdown("#### 🌊 Speech Fluency Trend")
-                fig_flu = go.Figure(go.Scatter(
-                    x=df_j["lbl"], y=df_j["fluency_score"],
-                    mode="lines+markers", name="Fluency",
-                    line=dict(color="#a855f7", width=3),
-                    marker=dict(size=8, color="#a855f7"),
-                    fill="tozeroy", fillcolor="rgba(168,85,247,0.08)",
-                ))
-                fig_flu.update_layout(**_plot_bg)
-                st.plotly_chart(fig_flu, use_container_width=True, key=f"flu_{prefix}_{label}")
-
-                # Past entries preview
-                with st.expander("📋 Past Entries"):
-                    disp = df_j[["lbl", "cognitive_score", "hesitation_score", "fluency_score", "vocabulary_score", "transcript"]].copy()
-                    disp.columns = ["Date", "Cognitive", "Hesitation", "Fluency", "Vocabulary", "Transcript"]
-                    st.dataframe(disp, use_container_width=True)
-
     st.markdown(f'<div style="{_DARK_CARD}">', unsafe_allow_html=True)
     st.markdown('<h3 style="color:white;">📊 Your Cognitive Trends</h3>', unsafe_allow_html=True)
     _j7  = get_journal_entries(user['username'], days=7)
@@ -1578,4 +1580,3 @@ with tab6:
     with exp_col2:
         st.info("📄 Full PDF report is auto-generated when 7+ entries exist. Available via the doctor portal.")
     st.markdown("</div>", unsafe_allow_html=True)
-

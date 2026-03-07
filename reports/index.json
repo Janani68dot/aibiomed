@@ -135,6 +135,22 @@
         "Semantic Impoverishment (High Pronoun Density)"
       ],
       "pdf_path": "C:\\Users\\janan\\Downloads\\cognitive-ai-main\\cognitive-ai-main\\reports\\John__20260307_003751.pdf"
+    },
+    {
+      "timestamp": "2026-03-07T07:40:15.029506",
+      "patient_name": "John ",
+      "age": 30,
+      "gender": "Male",
+      "username": "John",
+      "final_score": 0.5152,
+      "speech_risk": 0.5338,
+      "text_risk": 0.5,
+      "memory_score": 0.5,
+      "pronunciation_score": 0.5,
+      "findings": [
+        "Logopenia (Grammatical Collapse)"
+      ],
+      "pdf_path": "C:\\Users\\janan\\Downloads\\cognitive-ai-main\\cognitive-ai-main\\reports\\John__20260307_074015.pdf"
     }
   ]
 }

@@ -42,5 +42,25 @@
       "gender": "Male",
       "created_at": "2026-03-06T21:38:40.216967"
     }
+  },
+  {
+    "timestamp": "2026-03-07T07:40:15.029506",
+    "final_score": 0.5152014164582053,
+    "speech_risk": 0.5337809254626784,
+    "text_risk": 0.5,
+    "memory_score": 0.5,
+    "pronunciation_score": 0.5,
+    "findings": [
+      "Logopenia (Grammatical Collapse)"
+    ],
+    "patient": {
+      "username": "John",
+      "password_hash": "96d9632f363564cc3032521409cf22a852f2032eec099ed5967c0d000cec607a",
+      "role": "patient",
+      "name": "John ",
+      "age": 30,
+      "gender": "Male",
+      "created_at": "2026-03-06T21:38:40.216967"
+    }
   }
 ]
