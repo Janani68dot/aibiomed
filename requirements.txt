@@ -5,3 +5,5 @@ scikit-learn
 matplotlib
 librosa
 soundfile
+joblib
+SpeechRecognition
