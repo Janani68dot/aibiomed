@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-import spacy
+
 import re
 import random
 import os
